@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Score Manager</title>
+  <style>
+    :root{
+      --bg:#0f172a;        /* slate-900 */
+      --card:#111827;      /* gray-900 */
+      --muted:#94a3b8;     /* slate-400 */
+      --text:#e5e7eb;      /* gray-200 */
+      --brand:#22d3ee;     /* cyan-400 */
+      --green:#16a34a;     /* green-600 */
+      --red:#dc2626;       /* red-600 */
+      --yellow:#f59e0b;    /* amber-500 */
+      --ring:#38bdf8;      /* sky-400 */
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: linear-gradient(180deg, #0b1022, #0f172a);
+      color:var(--text);
+    }
+    header, footer{
+      text-align:center; padding:18px 16px;
+    }
+    header h1{ margin:0; font-size: clamp(1.25rem, 2vw + 1rem, 2rem); }
+    nav{
+      display:flex; gap:12px; justify-content:center; flex-wrap:wrap; padding:0 16px 16px;
+    }
+    nav a{ color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:10px; border:1px solid #1f2937 }
+    nav a:hover{ color:var(--text); border-color:var(--ring); box-shadow:0 0 0 3px color-mix(in oklab, var(--ring) 30%, transparent) }
+
+    main{ width:min(1100px, 92vw); margin:20px auto; display:grid; grid-template-columns: 1fr; gap:16px; }
+    @media (min-width: 980px){ main{ grid-template-columns: 340px 1fr; } }
+
+    .card{ background:var(--card); border:1px solid #1f2937; border-radius:16px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .card h2{ margin:0 0 8px; font-size:1.15rem }
+    .muted{ color:var(--muted); font-size:.9rem }
+
+    /* form */
+    form{ display:grid; gap:10px; }
+    .row{ display:grid; grid-template-columns: 1fr; gap:8px }
+    @media (min-width:600px){ .row{ grid-template-columns: 1fr 140px } }
+    label{ font-size:.9rem; color:var(--muted) }
+    input[type="text"], input[type="number"]{
+      width:100%; padding:10px 12px; border-radius:12px; border:1px solid #334155; background:#0b1220; color:var(--text);
+      outline:none; transition:border .15s, box-shadow .15s
+    }
+    input:focus{ border-color:var(--ring); box-shadow:0 0 0 4px color-mix(in oklab, var(--ring) 25%, transparent) }
+
+    .actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px }
+    button{ cursor:pointer; border:none; padding:10px 12px; border-radius:12px; color:#081420; font-weight:700 }
+    .btn-brand{ background:var(--brand) }
+    .btn-ghost{ background:#0b1220; color:var(--text); border:1px solid #334155 }
+    .btn-ghost:hover{ border-color:var(--ring) }
+
+    /* table */
+    .toolbar{ display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:center; margin-bottom:8px }
+    .toolbar .btns{ display:flex; gap:8px; flex-wrap:wrap }
+    table{ width:100%; border-collapse:collapse; overflow:hidden; border-radius:14px; border:1px solid #1f2937 }
+    thead{ background:#0b1220; color:var(--muted) }
+    th, td{ padding:12px 12px; text-align:left; }
+    tbody tr{ border-top:1px solid #1f2937 }
+    tbody tr:hover{ background:#0b122040 }
+
+    .score-good{ background: color-mix(in oklab, var(--green) 20%, transparent) }
+    .score-bad{ background: color-mix(in oklab, var(--red) 18%, transparent) }
+
+    .summary{ margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; color:var(--muted) }
+    .pill{ border:1px solid #334155; padding:6px 10px; border-radius:999px }
+
+    footer{ color:var(--muted) }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎓 Student Score Manager</h1>
+    <p class="muted">ฝึก HTML + CSS + JavaScript (Array, Loop, DOM, Events)</p>
+  </header>
+  <nav aria-label="Main">
+    <a href="#form">Add</a>
+    <a href="#list">List</a>
+    <a href="#summary">Summary</a>
+  </nav>
+
+  <main>
+    <!-- LEFT: Form -->
+    <section id="form" class="card">
+      <h2>เพิ่มนักเรียน</h2>
+      <p class="muted">กรอกชื่อและคะแนน (0–100) แล้วกด Add</p>
+      <form id="student-form">
+        <div>
+          <label for="name">ชื่อนักเรียน</label>
+          <input id="name" name="name" type="text" placeholder="เช่น Wachiravit" autocomplete="off" required />
+        </div>
+        <div class="row">
+          <div>
+            <label for="score">คะแนน (0–100)</label>
+            <input id="score" name="score" type="number" inputmode="numeric" min="0" max="100" placeholder="เช่น 78" required />
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-brand">Add Student</button>
+            <button type="button" class="btn-ghost" id="clear-all">Clear All</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- RIGHT: List -->
+    <section id="list" class="card">
+      <div class="toolbar">
+        <h2>รายชื่อนักเรียน</h2>
+        <div class="btns">
+          <button class="btn-ghost" id="sort-name">Sort by Name</button>
+          <button class="btn-ghost" id="sort-score">Sort by Score</button>
+          <button class="btn-ghost" id="shuffle">Shuffle</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table aria-describedby="summary">
+          <thead>
+            <tr><th style="width:60%">Name</th><th style="width:25%">Score</th><th>Action</th></tr>
+          </thead>
+          <tbody id="tbody">
+            <!-- rows go here -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="summary" class="summary" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Made for practice • HTML/CSS/JS only</small>
+  </footer>
+
+  <script>
+    /*** Data ***/
+    const students = [
+      { name: "Sea", score: 82 },
+      { name: "Tuy", score: 49 },
+      { name: "Jaonai", score: 73 },
+    ];
+
+    /*** DOM ***/
+    const form = document.getElementById('student-form');
+    const nameInput = document.getElementById('name');
+    const scoreInput = document.getElementById('score');
+    const tbody = document.getElementById('tbody');
+    const summary = document.getElementById('summary');
+
+    const btnSortName = document.getElementById('sort-name');
+    const btnSortScore = document.getElementById('sort-score');
+    const btnShuffle = document.getElementById('shuffle');
+    const btnClearAll = document.getElementById('clear-all');
+
+    /*** Utilities ***/
+    const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+    const avg = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+
+    function render(){
+      // rows
+      tbody.innerHTML = '';
+      for(let i = 0; i < students.length; i++){
+        const s = students[i];
+        const tr = document.createElement('tr');
+        if(s.score >= 80) tr.classList.add('score-good');
+        if(s.score < 50) tr.classList.add('score-bad');
+
+        const nameTd = document.createElement('td');
+        nameTd.textContent = s.name;
+
+        const scoreTd = document.createElement('td');
+        scoreTd.textContent = s.score;
+
+        const actionTd = document.createElement('td');
+        const del = document.createElement('button');
+        del.textContent = 'Delete';
+        del.className = 'btn-ghost';
+        del.addEventListener('click', () => { students.splice(i,1); render(); });
+        actionTd.appendChild(del);
+
+        tr.appendChild(nameTd);
+        tr.appendChild(scoreTd);
+        tr.appendChild(actionTd);
+        tbody.appendChild(tr);
+      }
+
+      // summary
+      const scores = students.map(s => s.score);
+      const min = scores.length ? Math.min(...scores) : 0;
+      const max = scores.length ? Math.max(...scores) : 0;
+      const average = Math.round(avg(scores) * 100) / 100;
+      summary.innerHTML = `
+        <span class="pill">Count: ${students.length}</span>
+        <span class="pill">Avg: ${average}</span>
+        <span class="pill">Min: ${min}</span>
+        <span class="pill">Max: ${max}</span>
+      `;
+    }
+
+    /*** Events ***/
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      const score = Number(scoreInput.value);
+      if(!name){
+        nameInput.focus();
+        return;
+      }
+      const safeScore = clamp(isNaN(score) ? 0 : score, 0, 100);
+      students.push({ name, score: safeScore });
+      nameInput.value = '';
+      scoreInput.value = '';
+      nameInput.focus();
+      render();
+    });
+
+    btnSortName.addEventListener('click', () => {
+      students.sort((a,b) => a.name.localeCompare(b.name));
+      render();
+    });
+
+    btnSortScore.addEventListener('click', () => {
+      students.sort((a,b) => b.score - a.score);
+      render();
+    });
+
+    btnShuffle.addEventListener('click', () => {
+      // Fisher–Yates
+      for(let i = students.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [students[i], students[j]] = [students[j], students[i]];
+      }
+      render();
+    });
+
+    btnClearAll.addEventListener('click', () => {
+      students.splice(0, students.length); // mutate to keep reference
+      render();
+    });
+
+    // initial
+    render();
+  </script>
+</body>
+</html>

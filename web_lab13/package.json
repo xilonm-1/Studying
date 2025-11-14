@@ -1,0 +1,16 @@
+{
+   "name": "lab13",
+   "version": "1.0.0",
+   "description": "",
+   "main": "StudentService.js",
+   "scripts": {
+     "start": "nodemon StudentService.js"
+   },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "init": "^0.1.2",
+    "mysql2": "^3.15.3",
+    "nodemon": "^3.1.10"
+  }
+}

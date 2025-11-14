@@ -1,0 +1,26 @@
+POST
+{
+  "student": {
+    "StudentID": 4,
+    "Firstname": "Mina",
+    "Lastname": "Chan",
+    "DOB": "1995-09-15",
+    "Mobilephone": "0822223344"
+  }
+}
+
+PUT
+{
+  "student": {
+    "studentid": 4,
+    "Firstname": "Mina",
+    "Lastname": "Lee",
+    "DOB": "1995-09-15",
+    "Mobilephone": "0811112233"
+  }
+}
+
+DEL
+{
+  "student_id": 4
+}

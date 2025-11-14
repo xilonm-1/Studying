@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Web Service Lab</title>
+
+</head>
+
+<body>
+    <input type="text" id="q" placeholder="Enter recipe name">
+    <button onclick="getConferenceResponses()">Search</button>
+    <h2>Food List</h2>
+    <div id="output"></div>
+
+</body>
+<script>
+    const API_KEY = "e4432b4ae6644f28a8930af6e9b0d1d8";
+
+    function getConferenceResponses() {
+        let query = document.querySelector("#q").value; 
+        console.log(query);
+
+        const base = "https://api.spoonacular.com/recipes/complexSearch";
+        const rooturl =
+            base +
+            "?apiKey=" +
+           API_KEY +
+            "&query=" +
+            query;
+
+        fetch(rooturl)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                document.querySelector("#output").innerHTML =
+                    data.results.map(
+                            (item) =>
+                                `<div>  
+                                        <ul>
+                                            <li>${item.title}</li><br>
+                                        <ul>
+                                        <img src="${item.image}" alt="${item.title}">
+                                    </div>`
+                        ).join("");
+            })
+            .catch((err) => console.log(err));
+    }
+</script>
+
+</html>
